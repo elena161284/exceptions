@@ -2,26 +2,24 @@ package org.example;
 
 public class Registration {
 
-    private static final String ALLOWED_CHARS="adchbj";
+    private static final String ALLOWED_CHARS="abcdefghijklmnopqrstuvwxyz0123456789_";
 
-    public static void check(String login, String password, String confirmPassword) throws WrongLoginException {
-        if (login.length() < 10) {
-            throw new WrongLoginException("Логин должен иметь не меньше 10 символов!");
+    public static void check(String login, String password, String confirmPassword)
+                             throws WrongLoginException, WrongPasswordException {
+        if (!isValidLogin(login)) {
+            throw new WrongLoginException("Логин должен содержать не меньше 20 символов!");
         }
-        if (!checkSymbol(login)) {
-            throw new WrongLoginException("Логин содержит недопустимые символы!");
+        if (!isValidChars(login)||!isValidChars(password)) {
+            throw new RuntimeException("Строка содержит недопустимые символы!");
         }
-        if (password.length() < 5) {
-            throw new WrongPasswordException("Пароль должен иметь не меньше 5 символов!");
+        if (!isValidPassword(password)) {
+            throw new WrongPasswordException("Пароль должен содержать не меньше 20 символов!");
         }
         if (!password.equals(confirmPassword)) {
             throw new WrongPasswordException("Пароли не равны!");
         }
-        if (!checkSymbol(password)) {
-            throw new WrongPasswordException("Пароль содержит недопустимые символы!");
-        }
     }
-    private static boolean checkSymbol(String symbol) {
+    private static boolean isValidChars(String symbol) {
         var lowercase = symbol.toLowerCase();
         for (int i = 0; i < lowercase.length(); i++) {
             var c = lowercase.charAt(i);
@@ -30,5 +28,17 @@ public class Registration {
             }
         }
         return true;
+    }
+    private static boolean isValidLogin(String login) {
+        return login.length() >= 20;
+
+    }
+    private static boolean isValidPassword(String password) {
+        return password.length() >= 20;
+    }
+
+    @Override
+    public boolean equals(Object password) {
+        return super.equals(password);
     }
 }
