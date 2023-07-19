@@ -1,44 +1,42 @@
 package org.example;
 
+import java.util.regex.Pattern;
+
 public class Registration {
 
-    private static final String ALLOWED_CHARS="abcdefghijklmnopqrstuvwxyz0123456789_";
+
+    private static final Pattern PATTERN = Pattern.compile("^[a-zA-Z0-9_]+$");
 
     public static void check(String login, String password, String confirmPassword)
-                             throws WrongLoginException, WrongPasswordException {
-        if (!isValidLogin(login)) {
-            throw new WrongLoginException("Логин должен содержать не меньше 20 символов!");
+            throws WrongLoginException, WrongPasswordException {
+        checkLogin(login);
+        checkPassword(password);
+        checkConfirmPassword(password, confirmPassword);
+    }
+
+    private static boolean isCheckWithRegex(String str) {
+        return str.matches("^[a-zA-Z0-9_!]+$");
+    }
+
+    private static void checkLogin(String login) {
+        if (login.length() >= 20) {
+            throw new WrongLoginException("Логин должен быть длиной меньше 20 символов!");
+        }else if (!isCheckWithRegex(login)){
+            throw new WrongLoginException ("Логин содержит недопустимые символы!");
         }
-        if (!isValidChars(login)||!isValidChars(password)) {
-            throw new RuntimeException("Строка содержит недопустимые символы!");
+    }
+
+    private static void checkPassword(String password) {
+        if (password.length() >= 20) {
+            throw new WrongPasswordException("Пароль должен быть длиной меньше 20 символов!");
+        }else if(!isCheckWithRegex(password)) {
+            throw new WrongPasswordException("Пароль содержит недопустимые символы!");
         }
-        if (!isValidPassword(password)) {
-            throw new WrongPasswordException("Пароль должен содержать не меньше 20 символов!");
-        }
+    }
+
+    private static void checkConfirmPassword(String password, String confirmPassword) {
         if (!password.equals(confirmPassword)) {
             throw new WrongPasswordException("Пароли не равны!");
         }
-    }
-    private static boolean isValidChars(String symbol) {
-        var lowercase = symbol.toLowerCase();
-        for (int i = 0; i < lowercase.length(); i++) {
-            var c = lowercase.charAt(i);
-            if (!ALLOWED_CHARS.contains(String.valueOf(c))) {
-                return false;
-            }
-        }
-        return true;
-    }
-    private static boolean isValidLogin(String login) {
-        return login.length() >= 20;
-
-    }
-    private static boolean isValidPassword(String password) {
-        return password.length() >= 20;
-    }
-
-    @Override
-    public boolean equals(Object password) {
-        return super.equals(password);
     }
 }
